@@ -1,0 +1,150 @@
+@import "tailwindcss";
+
+/* Cores e tamanhos vindos do app (frontend/src/tokens.css do VOX).
+   Uma cor de destaque so (acento), como no editor. */
+@theme {
+  --color-fundo: #0b0b0f;
+  --color-painel: #121218;
+  --color-painel-2: #17171f;
+  --color-painel-3: #1e1e28;
+  --color-borda: #262633;
+  --color-borda-forte: #33334a;
+  --color-texto: #ececf4;
+  --color-texto-2: #b4b4c6;
+  --color-mudo: #8a8aa0;
+  --color-acento: #2ee6a6;
+  --color-acento-escuro: #15b482;
+  --color-acento-tinta: #0b2a20;
+  --color-perigo: #f06a6a;
+  --color-aviso: #f2c14e;
+
+  --font-sans: var(--font-inter), "Segoe UI", system-ui, sans-serif;
+  --font-mono: var(--font-mono-jb), ui-monospace, "Cascadia Mono", monospace;
+
+  --radius-r1: 6px;
+  --radius-r2: 10px;
+  --radius-r3: 14px;
+  --radius-r4: 22px;
+
+  --ease-suave: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  background: var(--color-fundo);
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-fundo);
+  color: var(--color-texto);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+::selection {
+  background: var(--color-acento);
+  color: var(--color-fundo);
+}
+
+/* Foco sempre visivel para teclado, na cor de destaque. */
+:focus-visible {
+  outline: 2px solid var(--color-acento);
+  outline-offset: 3px;
+}
+
+/* Entrada das secoes: so CSS, presa a rolagem nos navegadores que
+   suportam; nos outros o conteudo aparece pronto. */
+@keyframes surgir {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .revelar {
+      animation: surgir linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+  }
+}
+
+/* Entrada do topo, uma vez, ao carregar. */
+@keyframes subir {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .entrar {
+    animation: subir 0.8s var(--ease-suave) both;
+  }
+  .entrar-2 {
+    animation: subir 0.8s 0.08s var(--ease-suave) both;
+  }
+  .entrar-3 {
+    animation: subir 0.8s 0.16s var(--ease-suave) both;
+  }
+  .entrar-4 {
+    animation: subir 0.9s 0.26s var(--ease-suave) both;
+  }
+}
+
+/* Grade fina de fundo, como a regua de um editor. */
+.grade-fundo {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 30%, transparent 75%);
+}
+
+.brilho-acento {
+  background: radial-gradient(
+    closest-side,
+    rgb(46 230 166 / 0.2),
+    rgb(46 230 166 / 0.05) 55%,
+    transparent
+  );
+}
+
+.texto-gradiente {
+  background: linear-gradient(180deg, #ffffff 0%, #c4c4d4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Perguntas frequentes com <details>: marcador proprio. */
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+details[open] .seta-faq {
+  transform: rotate(45deg);
+}
