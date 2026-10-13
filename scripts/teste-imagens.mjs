@@ -27,8 +27,13 @@ for (const t of telas) {
       const tipo = r.request().resourceType();
       if (["image", "media"].includes(tipo) && r.status() >= 400) erros.push(`${r.status()} ${r.url()}`);
     });
+    const abortados = new Set();
     pagina.on("requestfailed", (r) => {
-      if (["image", "media"].includes(r.resourceType())) erros.push(`falhou ${r.url()} (${r.failure()?.errorText})`);
+      const tipo = r.resourceType();
+      const motivo = r.failure()?.errorText || "";
+      // mídia: o navegador aborta o 1º pedido e refaz por partes (Range); confere depois
+      if (tipo === "media" && motivo.includes("ERR_ABORTED")) abortados.add(r.url());
+      else if (["image", "media"].includes(tipo)) erros.push(`falhou ${r.url()} (${motivo})`);
     });
     const resp = await pagina.goto(base + rota, { waitUntil: "networkidle" });
     if (!resp || resp.status() >= 400) erros.push(`página ${rota} respondeu ${resp?.status()}`);
@@ -39,6 +44,10 @@ for (const t of telas) {
       }
     });
     await pagina.waitForLoadState("networkidle");
+    for (const url of abortados) {
+      const st = await pagina.evaluate(async (u) => (await fetch(u, { method: "HEAD" })).status, url);
+      if (st >= 400) erros.push(`mídia ${st}: ${url}`);
+    }
     const r = await pagina.evaluate(async () => {
       const ruins = [];
       const imgs = [...document.querySelectorAll("img")];
@@ -51,7 +60,7 @@ for (const t of telas) {
         try {
           const resp = await fetch(url, { method: "HEAD" });
           if (!resp.ok) ruins.push(`mídia ${resp.status}: ${url}`);
-        } catch (e) {
+        } catch {
           ruins.push(`mídia falhou: ${url}`);
         }
       }

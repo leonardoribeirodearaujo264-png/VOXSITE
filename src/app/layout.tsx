@@ -8,7 +8,8 @@ import "./globals.css";
 // Inter é a fonte do app. As duas são baixadas do Google Fonts na hora do
 // build e servidas pelo próprio site (nada carregado de terceiros no navegador).
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"], display: "swap" });
-const mono = JetBrains_Mono({ variable: "--font-mono-jb", subsets: ["latin"], display: "swap", weight: ["400", "500"] });
+// a mono é só para rótulos pequenos: não disputa banda com a primeira tela
+const mono = JetBrains_Mono({ variable: "--font-mono-jb", subsets: ["latin"], display: "swap", weight: ["400", "500"], preload: false });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),

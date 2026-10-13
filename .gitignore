@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# renders cheios do Remotion (o site usa só public/videos)
+/out/

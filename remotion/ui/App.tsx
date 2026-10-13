@@ -25,7 +25,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { C, F } from "../tema";
-import { VideoVertical, type Edicao, type Variante } from "./Cena";
+import { VideoVertical, type Edicao, type Entrada, type PessoaAnim, type Variante } from "./Cena";
 
 /* Peças da interface do VOX recriadas a partir do frontend real
    (App.Cabecalho, Trilho, GavetaIA, VersaoIA, Timeline, GaleriaModelos,
@@ -403,7 +403,7 @@ export function Timeline({
 }
 
 /* ----------------------------------------------------------- celular */
-export function Celular({ largura = 300, variante = "advogada", edicao, cru, brilho = true, style }: { largura?: number; variante?: Variante; edicao?: Edicao; cru?: boolean; brilho?: boolean; style?: CSSProperties }) {
+export function Celular({ largura = 300, variante = "advogada", edicao, cru, brilho = true, style, pessoa, entrada, children }: { largura?: number; variante?: Variante; edicao?: Edicao; cru?: boolean; brilho?: boolean; style?: CSSProperties; pessoa?: PessoaAnim; entrada?: Entrada; children?: ReactNode }) {
   const r = largura * 0.12;
   return (
     <div
@@ -418,7 +418,9 @@ export function Celular({ largura = 300, variante = "advogada", edicao, cru, bri
       }}
     >
       <div style={{ borderRadius: r, overflow: "hidden" }}>
-        <VideoVertical variante={variante} edicao={edicao} cru={cru} />
+        <VideoVertical variante={variante} edicao={edicao} cru={cru} pessoa={pessoa} entrada={entrada}>
+          {children}
+        </VideoVertical>
       </div>
     </div>
   );

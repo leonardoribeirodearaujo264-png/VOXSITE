@@ -1,5 +1,6 @@
-import { Still } from "remotion";
+import { Composition, Still } from "remotion";
 import * as Q from "./cenas/Quadros";
+import { Hero, HERO_DURACAO, HERO_QPS } from "./cenas/Hero";
 
 /** Quadros estáticos do site (Etapa 1). Viram WebP por scripts/render-quadros.mjs.
  *  Os vídeos (Etapas 2 a 4) entram aqui como <Composition>. */
@@ -29,6 +30,8 @@ export function Raiz() {
       {QUADROS.map((q) => (
         <Still key={q.id} id={q.id} component={q.componente} width={q.largura} height={q.altura} />
       ))}
+      <Composition id="hero-16x9-video" component={Hero} durationInFrames={HERO_DURACAO} fps={HERO_QPS} width={1920} height={1080} defaultProps={{ formato: "16x9" as const, som: true }} />
+      <Composition id="hero-9x16-video" component={Hero} durationInFrames={HERO_DURACAO} fps={HERO_QPS} width={1080} height={1920} defaultProps={{ formato: "9x16" as const, som: true }} />
     </>
   );
 }

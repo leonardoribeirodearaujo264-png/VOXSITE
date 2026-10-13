@@ -1,4 +1,4 @@
-﻿// Renderiza os quadros estÃ¡ticos do Remotion (remotion/Root.tsx) em WebP,
+// Renderiza os quadros estáticos do Remotion (remotion/Root.tsx) em WebP,
 // em src/assets/visuais/. Uso: node scripts/render-quadros.mjs [id ...]
 import path from "node:path";
 import { mkdirSync } from "node:fs";
@@ -13,6 +13,7 @@ const so = process.argv.slice(2);
 const serveUrl = await bundle({ entryPoint: path.join(raiz, "remotion", "index.ts") });
 const comps = await getCompositions(serveUrl);
 for (const c of comps) {
+  if (c.durationInFrames > 1) continue; // vídeos: scripts/render-videos.mjs
   if (so.length && !so.includes(c.id)) continue;
   const t = Date.now();
   await renderStill({ serveUrl, composition: c, output: path.join(saida, `${c.id}.webp`), imageFormat: "webp", overwrite: true });

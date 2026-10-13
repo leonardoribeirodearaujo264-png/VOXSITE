@@ -7,7 +7,7 @@ import { C, F } from "../tema";
 export type Variante = "advogada" | "advogado" | "criadora";
 
 const PELE: Record<Variante, [string, string]> = {
-  advogada: ["#C99273", "#A9765B"],
+  advogada: ["#C89478", "#9C6E56"],
   advogado: ["#B98563", "#94664B"],
   criadora: ["#E0B497", "#C4967A"],
 };
@@ -17,7 +17,22 @@ const ROUPA: Record<Variante, [string, string]> = {
   criadora: ["#2E6B5C", "#22524A"],
 };
 
-export function Personagem({ variante = "advogada", cru = false }: { variante?: Variante; cru?: boolean }) {
+export function Personagem({
+  variante = "advogada",
+  cru = false,
+  abertura = 0,
+  piscar = false,
+  inclinar = 0,
+  mover = [0, 0],
+}: {
+  variante?: Variante;
+  cru?: boolean;
+  /** boca, de 0 (fechada) a 1 (aberta), para animar a fala */
+  abertura?: number;
+  piscar?: boolean;
+  inclinar?: number;
+  mover?: [number, number];
+}) {
   const [pele, peleSombra] = PELE[variante];
   const [roupa, roupaSombra] = ROUPA[variante];
   const id = `p-${variante}-${cru ? "c" : "e"}`;
@@ -40,6 +55,10 @@ export function Personagem({ variante = "advogada", cru = false }: { variante?: 
           <stop offset="0" stopColor={roupaSombra} />
           <stop offset="0.55" stopColor={roupa} />
           <stop offset="1" stopColor={roupaSombra} />
+        </linearGradient>
+        <linearGradient id={`${id}-cabelo`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor={variante === "criadora" ? "#6B4630" : "#3A2A20"} />
+          <stop offset="1" stopColor={variante === "criadora" ? "#3E2618" : "#1A120D"} />
         </linearGradient>
         <radialGradient id={`${id}-rosto`} cx="0.62" cy="0.35" r="0.8">
           <stop offset="0" stopColor={pele} />
@@ -80,52 +99,69 @@ export function Personagem({ variante = "advogada", cru = false }: { variante?: 
         </g>
       )}
 
-      <g transform="translate(0 70)">
-      {/* cabelo de trás */}
-      {variante !== "advogado" && (
-        <path
-          d="M372 1040 C 340 780 450 700 545 700 C 650 700 745 770 718 1040 C 732 1180 742 1290 712 1380 L 378 1380 C 350 1290 360 1170 372 1040 Z"
-          fill={variante === "criadora" ? "#5A3A26" : "#2A1C15"}
-        />
-      )}
-
+      {/* ---- pessoa: proporções adultas, traços sóbrios ---- */}
+      <g transform={`translate(${mover[0]} ${mover[1] + 40})`}>
+        {/* cabelo de trás */}
+        {variante !== "advogado" && (
+          <path
+            d="M432 930 C 420 800 480 742 545 742 C 615 742 668 800 660 930 C 668 1030 678 1150 694 1292 C 655 1312 612 1302 590 1282 L 495 1282 C 470 1302 428 1312 388 1292 C 406 1150 420 1030 432 930 Z"
+            fill={`url(#${id}-cabelo)`}
+          />
+        )}
       </g>
+
       {/* corpo */}
-      <path d="M120 1920 C 135 1560 290 1390 540 1360 C 790 1390 945 1560 960 1920 Z" fill={`url(#${id}-roupa)`} />
-      <rect x="492" y="1200" width="96" height="190" rx="40" fill={peleSombra} />
+      <path
+        d="M200 1920 C 205 1650 232 1452 332 1386 C 402 1346 456 1306 486 1272 L 594 1272 C 624 1306 678 1346 748 1386 C 848 1452 875 1650 880 1920 Z"
+        fill={`url(#${id}-roupa)`}
+      />
+      <path d="M494 1130 L 494 1262 C 518 1296 562 1296 586 1262 L 586 1130 Z" fill={peleSombra} />
+      <ellipse cx="540" cy="1160" rx="50" ry="24" fill="#000" opacity="0.2" />
       {variante === "criadora" ? (
-        <path d="M430 1372 C 470 1430 610 1430 650 1372 L 600 1360 C 570 1395 510 1395 480 1360 Z" fill={peleSombra} opacity="0.7" />
+        <path d="M470 1270 C 495 1320 585 1320 610 1270 L 640 1300 C 600 1350 480 1350 440 1300 Z" fill={roupaSombra} />
       ) : (
         <>
-          <path d="M490 1372 L 540 1500 L 590 1372 Z" fill="#ECE7DF" />
-          {variante === "advogado" && <path d="M528 1395 L 552 1395 L 566 1640 L 540 1680 L 514 1640 Z" fill="#7A2E33" />}
-          <path d="M455 1370 L 540 1610 L 400 1460 Z" fill={roupaSombra} opacity="0.9" />
-          <path d="M625 1370 L 540 1610 L 680 1460 Z" fill={roupaSombra} opacity="0.9" />
+          <path d="M476 1266 L 540 1336 L 604 1266 L 562 1426 L 518 1426 Z" fill="#E9E4DB" />
+          {variante === "advogado" ? (
+            <>
+              <path d="M470 1264 L 540 1334 L 512 1352 L 462 1290 Z" fill="#F4F1EC" />
+              <path d="M610 1264 L 540 1334 L 568 1352 L 618 1290 Z" fill="#F4F1EC" />
+              <path d="M528 1338 L 552 1338 L 562 1360 L 572 1560 L 540 1600 L 508 1560 L 518 1360 Z" fill="#5B2A30" />
+            </>
+          ) : (
+            <path d="M500 1290 Q 540 1330 580 1290" stroke="#CFC8BC" strokeWidth="4" fill="none" />
+          )}
+          <path d="M486 1270 L 540 1424 L 504 1580 L 418 1372 C 438 1330 462 1296 486 1270 Z" fill={roupaSombra} />
+          <path d="M594 1270 L 540 1424 L 576 1580 L 662 1372 C 642 1330 618 1296 594 1270 Z" fill={roupaSombra} />
+          <circle cx="540" cy="1690" r="9" fill="#0E1018" />
         </>
       )}
 
-      <g transform="translate(0 70)">
-      {/* cabeça */}
-      <ellipse cx="540" cy="1000" rx="148" ry="182" fill={`url(#${id}-rosto)`} />
-      {/* traços simples de ilustração: olhos fechados sorrindo e boca */}
-      <path d="M470 1000 Q 490 986 510 1000" stroke="#3A2418" strokeWidth="9" fill="none" strokeLinecap="round" />
-      <path d="M570 1000 Q 590 986 610 1000" stroke="#3A2418" strokeWidth="9" fill="none" strokeLinecap="round" />
-      <path d="M505 1085 Q 540 1112 575 1085" stroke="#7A3A30" strokeWidth="9" fill="none" strokeLinecap="round" />
-      <ellipse cx="470" cy="1050" rx="26" ry="14" fill="#E07A6A" opacity="0.22" />
-      <ellipse cx="610" cy="1050" rx="26" ry="14" fill="#E07A6A" opacity="0.22" />
-      <ellipse cx="392" cy="1010" rx="22" ry="40" fill={peleSombra} />
-      <ellipse cx="688" cy="1010" rx="22" ry="40" fill={peleSombra} />
-
-      {/* cabelo da frente */}
-      {variante === "advogado" ? (
-        <path d="M394 965 C 380 840 450 790 545 790 C 640 790 705 840 690 965 C 670 900 620 870 545 872 C 470 870 415 900 394 965 Z" fill="#1F1814" />
-      ) : (
+      <g transform={`translate(${mover[0]} ${mover[1] + 40}) rotate(${inclinar} 540 1110)`}>
+        {/* orelhas e rosto */}
+        <ellipse cx="441" cy="948" rx="13" ry="27" fill={peleSombra} />
+        <ellipse cx="639" cy="948" rx="13" ry="27" fill={peleSombra} />
         <path
-          d="M392 1000 C 380 850 450 790 548 790 C 650 790 708 860 690 1000 C 660 900 600 870 520 885 C 470 895 420 930 392 1000 Z"
-          fill={variante === "criadora" ? "#5A3A26" : "#2A1C15"}
+          d="M440 925 C 440 830 486 790 540 790 C 594 790 640 830 640 925 C 640 1010 612 1075 575 1105 C 556 1120 524 1120 505 1105 C 468 1075 440 1010 440 925 Z"
+          fill={`url(#${id}-rosto)`}
         />
-      )}
-
+        <path d="M445 960 C 452 1030 478 1080 505 1105 C 470 1085 446 1030 445 960 Z" fill="#000" opacity="0.12" />
+        {/* sobrancelhas, olhos, nariz e boca: discretos */}
+        <path d="M477 893 Q 498 884 521 890" stroke="#2A1C15" strokeWidth="7" fill="none" strokeLinecap="round" />
+        <path d="M559 890 Q 582 884 603 893" stroke="#2A1C15" strokeWidth="7" fill="none" strokeLinecap="round" />
+        <ellipse cx="499" cy="922" rx="12" ry={piscar ? 1.5 : 6.5} fill="#23170F" />
+        <ellipse cx="581" cy="922" rx="12" ry={piscar ? 1.5 : 6.5} fill="#23170F" />
+        <path d="M544 936 Q 537 984 529 994 Q 541 1001 553 995" stroke={peleSombra} strokeWidth="5" fill="none" strokeLinecap="round" opacity="0.8" />
+        <path d={`M516 1040 Q 540 1033 564 1040 Q 540 ${1050 + abertura * 22} 516 1040 Z`} fill="#94564A" />
+        {/* cabelo da frente */}
+        {variante === "advogado" ? (
+          <path d="M440 905 C 436 818 488 776 545 776 C 604 776 648 818 642 905 C 630 855 600 836 545 836 C 492 836 455 852 440 905 Z" fill={`url(#${id}-cabelo)`} />
+        ) : (
+          <>
+            <path d="M440 930 C 432 830 486 772 548 772 C 616 772 660 826 652 930 C 640 868 612 840 568 832 C 546 870 500 902 440 930 Z" fill={`url(#${id}-cabelo)`} />
+            <path d="M440 930 C 424 1050 430 1180 446 1296 L 474 1296 C 460 1180 456 1050 464 948 Z" fill={`url(#${id}-cabelo)`} />
+          </>
+        )}
       </g>
 
       {/* mesa */}
@@ -136,6 +172,9 @@ export function Personagem({ variante = "advogada", cru = false }: { variante?: 
     </svg>
   );
 }
+
+export type PessoaAnim = { abertura?: number; piscar?: boolean; inclinar?: number; mover?: [number, number] };
+export type Entrada = { titulo?: number; arroba?: number; legenda?: number; card?: number; zoom?: number };
 
 /** O vídeo como a pessoa recebe do VOX: personagem + legenda, @, título e card. */
 export type Edicao = {
@@ -151,17 +190,28 @@ export function VideoVertical({
   cru = false,
   style,
   children,
+  pessoa,
+  entrada,
 }: {
   variante?: Variante;
   edicao?: Edicao;
   cru?: boolean;
   style?: CSSProperties;
   children?: ReactNode;
+  /** animação da pessoa (fala, piscar, respirar) */
+  pessoa?: PessoaAnim;
+  /** entrada de cada elemento, de 0 a 1 (padrão: 1, já na tela) */
+  entrada?: Entrada;
 }) {
+  const e = { titulo: 1, arroba: 1, legenda: 1, card: 1, zoom: 1, ...entrada };
+  const surge = (p: number, dy = 6): CSSProperties => ({
+    opacity: Math.min(1, Math.max(0, p)),
+    translate: `0 ${(1 - Math.min(1, Math.max(0, p))) * dy}cqw`,
+  });
   return (
     <div style={{ position: "relative", width: "100%", aspectRatio: "9 / 16", overflow: "hidden", containerType: "inline-size", background: "#000", ...style }}>
-      <div style={{ position: "absolute", inset: 0, transform: edicao && !cru ? "scale(1.06)" : undefined }}>
-        <Personagem variante={variante} cru={cru} />
+      <div style={{ position: "absolute", inset: 0, transform: edicao && !cru ? `scale(${1 + 0.06 * e.zoom})` : undefined }}>
+        <Personagem variante={variante} cru={cru} {...pessoa} />
       </div>
       {edicao?.arroba && (
         <div
@@ -180,6 +230,7 @@ export function VideoVertical({
             fontSize: "4.2cqw",
             letterSpacing: "0.01em",
             whiteSpace: "nowrap",
+            ...surge(e.arroba, -4),
           }}
         >
           {edicao.arroba}
@@ -197,6 +248,7 @@ export function VideoVertical({
             background: "rgba(12,12,16,.78)",
             border: `1px solid ${C.dourado}55`,
             boxShadow: "0 2cqw 6cqw rgba(0,0,0,.35)",
+            ...surge(e.titulo, -5),
           }}
         >
           <div style={{ fontFamily: F.ui, fontWeight: 700, fontSize: "3cqw", letterSpacing: "0.22em", color: C.dourado }}>
@@ -219,6 +271,7 @@ export function VideoVertical({
             background: "rgba(16,16,22,.86)",
             border: "1px solid rgba(255,255,255,.14)",
             borderLeft: `1.2cqw solid ${C.dourado}`,
+            ...surge(e.card, -5),
           }}
         >
           <div style={{ display: "flex", justifyContent: "space-between", fontFamily: F.ui, fontWeight: 700, fontSize: "2.8cqw", letterSpacing: "0.12em", color: "#fff" }}>
@@ -245,6 +298,7 @@ export function VideoVertical({
             lineHeight: 1.12,
             color: "#fff",
             textShadow: "0 0.5cqw 2cqw rgba(0,0,0,.65)",
+            ...surge(e.legenda, 4),
           }}
         >
           {edicao.legenda.antes} {edicao.legenda.destaque && <span style={{ color: C.dourado }}>{edicao.legenda.destaque}</span>}{" "}

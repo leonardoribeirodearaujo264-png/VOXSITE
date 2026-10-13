@@ -1,6 +1,7 @@
 import { Briefcase, Clock3, Megaphone, MousePointerClick, Stethoscope, Type } from "lucide-react";
 import { Secao } from "@/components/Secao";
-import { Quadro, QuadroResponsivo } from "@/components/Quadro";
+import { Quadro } from "@/components/Quadro";
+import { HeroVideo } from "@/components/HeroVideo";
 import { Faq } from "@/components/Faq";
 import { BotaoDownload } from "@/components/BotaoDownload";
 import { BotaoCompra } from "@/components/BotaoCompra";
@@ -65,31 +66,28 @@ export default function Inicio() {
         <div aria-hidden="true" className="grade-fundo pointer-events-none absolute inset-0" />
         <div className="relative mx-auto max-w-6xl px-4 pb-14 pt-12 sm:px-6 sm:pb-24 sm:pt-24">
           <div className="mx-auto max-w-4xl text-center">
-            <p className="entrar inline-flex items-center gap-2 rounded-full border border-borda bg-painel/70 px-3.5 py-1.5 text-[13px] text-texto-2">
+            <p className="inline-flex items-center gap-2 rounded-full border border-borda bg-painel/70 px-3.5 py-1.5 text-[13px] text-texto-2">
               <span className="h-1.5 w-1.5 rounded-full bg-acento" aria-hidden="true" />
               Editor de vídeo com IA para Windows
             </p>
             <h1
               id="titulo-principal"
-              className="entrar-2 texto-gradiente mt-6 text-balance text-[46px] font-extrabold leading-[0.98] tracking-[-0.04em] sm:text-[80px] lg:text-[96px]"
+              className="texto-gradiente mt-6 text-balance text-[46px] font-extrabold leading-[0.98] tracking-[-0.04em] sm:text-[80px] lg:text-[96px]"
             >
               Você pede. <span className="text-acento [-webkit-text-fill-color:currentColor]">O VOX edita.</span>
             </h1>
-            <p className="entrar-3 mx-auto mt-6 max-w-2xl text-pretty text-[18px] leading-relaxed text-texto-2 sm:text-[20px]">
+            <p className="mx-auto mt-6 max-w-2xl text-pretty text-[18px] leading-relaxed text-texto-2 sm:text-[20px]">
               Grave falando, escreva o que quer e receba o vídeo cortado, legendado e pronto para postar. Sem passar a
               noite editando.
             </p>
-            <div className="entrar-3 mt-9 flex flex-col items-center justify-center gap-3">
+            <div className="mt-9 flex flex-col items-center justify-center gap-3">
               <BotaoDownload origem="topo" />
               <p className="text-[13px] text-mudo">Windows 10 e 11 · não precisa saber editar</p>
             </div>
           </div>
-          <QuadroResponsivo
-            celular={V.hero916}
-            desktop={V.hero169}
-            alt="O VOX com o pedido “corta os silêncios, legenda jurídico premium e meu @ no topo”, o plano concluído e o vídeo pronto no celular, com legenda, título e @."
-            className="entrar-4 mx-auto mt-12 max-w-[440px] sm:mt-16 md:max-w-[1120px]"
-          />
+          <div className="mx-auto mt-12 max-w-[440px] sm:mt-16 md:max-w-[1120px]">
+            <HeroVideo />
+          </div>
         </div>
       </section>
 
