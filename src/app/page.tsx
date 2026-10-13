@@ -6,6 +6,8 @@ import { BotaoDownload } from "@/components/BotaoDownload";
 import { Requisitos } from "@/components/Requisitos";
 import { FAQ_GERAL } from "@/lib/faq";
 import { CAP } from "@/lib/capturas";
+import { BotaoCompra } from "@/components/BotaoCompra";
+import { buscarRelease, formatarTamanho } from "@/lib/release";
 
 const PASSOS = [
   {
@@ -105,7 +107,9 @@ const FUNCOES = [
   },
 ];
 
-export default function Inicio() {
+export default async function Inicio() {
+  const r = await buscarRelease();
+  const tamanho = r.ok ? formatarTamanho(r.release.instalador.bytes) : undefined;
   return (
     <>
       {/* ---------------------------------------------------------- topo */}
@@ -246,7 +250,7 @@ export default function Inicio() {
         texto="Não precisa de placa de vídeo. O VOX é desenvolvido e testado num Intel Core i5 de 4 núcleos, de 2012, com 16 GB de memória."
         className="border-t border-borda/60"
       >
-        <Requisitos />
+        <Requisitos tamanhoInstalador={tamanho} />
       </Secao>
 
       {/* -------------------------------------------------------------- FAQ */}
@@ -267,8 +271,9 @@ export default function Inicio() {
           <p className="mx-auto mt-5 max-w-xl text-[17px] leading-relaxed text-texto-2">
             Baixe o VOX para Windows, abra uma gravação e escreva o que quer.
           </p>
-          <div className="mt-9 flex justify-center">
+          <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <BotaoDownload origem="final" />
+            <BotaoCompra />
           </div>
         </div>
       </section>
