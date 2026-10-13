@@ -15,9 +15,8 @@ export const metadata: Metadata = {
 export default async function Download() {
   const r = await buscarRelease();
   const rel = r.ok ? r.release : null;
-  const nomeExe = rel?.instalador.nome ?? "VOX-Videos-Setup-<versão>.exe";
 
-  const passos = [
+  const passos: { t: string; d: string; smartscreen?: boolean; link?: boolean }[] = [
     {
       t: "Baixe o instalador",
       d: rel
@@ -25,26 +24,22 @@ export default async function Download() {
         : "Clique em Baixar para Windows e, na página do GitHub, baixe o arquivo VOX-Videos-Setup terminado em .exe.",
     },
     {
-      t: "Confira o arquivo (opcional)",
-      d: "No PowerShell, na pasta Downloads, rode o comando abaixo e compare o resultado com o SHA-256 desta página. Se for igual, o arquivo é o original.",
-      cmd: `Get-FileHash .\\${nomeExe} -Algorithm SHA256`,
-    },
-    {
       t: "Abra o instalador",
-      d: "O instalador ainda não tem assinatura digital, então o Windows pode mostrar a tela azul “O Windows protegeu o computador”. Clique em Mais informações e depois em Executar assim mesmo.",
+      d: "O Windows pode mostrar uma tela azul dizendo “O Windows protegeu o computador”. É normal: clique em Mais informações e depois em Executar assim mesmo.",
       smartscreen: true,
     },
     {
       t: "Siga o instalador",
-      d: "Escolha a pasta (pode ser outro disco, como o D:) e vá em Avançar até Concluir. Python, FFmpeg e o modelo de transcrição já vão dentro. Se faltar o WebView2, o instalador baixa.",
+      d: "Escolha a pasta (pode ser outro disco, como o D:) e vá em Avançar até Concluir. Não precisa instalar mais nada.",
     },
     {
       t: "Primeira abertura",
-      d: "O VOX pergunta onde guardar os projetos. Depois mostra os termos do Remotion (títulos, cards e animações) e, com o seu aceite, baixa cerca de 220 MB.",
+      d: "O VOX pergunta onde guardar os projetos e, com a sua autorização, baixa o programa dos títulos e animações. Leva alguns minutos, uma vez só.",
     },
     {
-      t: "Licença e chave de API",
-      d: "Em Configuração, cole a chave de licença para liberar a exportação. Para usar o Editar com IA, cole também a sua chave de API da Anthropic.",
+      t: "Licença e chave da IA",
+      d: "Em Configuração, cole a chave de licença para liberar a exportação e a sua chave da IA para usar o Editar com IA.",
+      link: true,
     },
   ];
 
@@ -57,7 +52,7 @@ export default async function Download() {
             Baixar o VOX Videos
           </h1>
           <p className="entrar-2 mx-auto mt-5 max-w-xl text-[17px] leading-relaxed text-texto-2">
-            Para Windows 10 e 11, 64 bits. Um instalador só, com tudo dentro.
+            Para Windows 10 e 11. Um instalador só, com tudo dentro.
           </p>
           <div className="entrar-3 mt-10 flex justify-center">
             <BotaoDownloadVisual resultado={r} origem="download" grande />
@@ -80,19 +75,8 @@ export default async function Download() {
             </dl>
           ) : (
             <p role="status" className="entrar-4 mx-auto mt-8 max-w-md text-[15px] leading-relaxed text-mudo">
-              Não deu para ler os dados da versão agora. O botão leva para a página da última versão no GitHub, com o
-              instalador e o SHA-256.
+              Não deu para ler os dados da versão agora. O botão leva para a página da última versão no GitHub.
             </p>
-          )}
-
-          {rel?.sha256 && (
-            <div className="entrar-4 mx-auto mt-4 max-w-xl rounded-r3 border border-borda bg-painel p-4 text-left">
-              <div className="flex items-center justify-between gap-3">
-                <p className="font-mono text-[11.5px] uppercase tracking-[0.14em] text-mudo">SHA-256 do instalador</p>
-                <Copiar texto={rel.sha256} rotulo="Copiar SHA-256" />
-              </div>
-              <p className="mt-2 break-all font-mono text-[13px] leading-relaxed text-texto">{rel.sha256}</p>
-            </div>
           )}
 
           <p className="mt-8 text-[15px]">
@@ -125,17 +109,40 @@ export default async function Download() {
                 <div className="min-w-0 flex-1">
                   <h3 className="text-[17px] font-semibold">{p.t}</h3>
                   <p className="mt-1.5 text-[15px] leading-relaxed text-texto-2">{p.d}</p>
-                  {p.cmd && (
-                    <div className="mt-3 flex items-center gap-2 rounded-r2 border border-borda bg-fundo p-2 pl-3">
-                      <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap font-mono text-[13px] text-texto">{p.cmd}</code>
-                      <Copiar texto={p.cmd} rotulo="Copiar comando" />
-                    </div>
-                  )}
                   {p.smartscreen && <SmartScreen />}
+                  {p.link && (
+                    <Link href="/#chave" className="mt-2 inline-block text-[15px] font-semibold text-acento underline underline-offset-4">
+                      Como criar a chave da IA
+                    </Link>
+                  )}
                 </div>
               </li>
             ))}
           </ol>
+          {rel && (
+            <details className="mt-10 rounded-r3 border border-borda bg-painel/60 px-5 sm:px-6">
+              <summary className="cursor-pointer py-4 text-[16px] font-semibold">Detalhes técnicos</summary>
+              <div className="space-y-4 pb-6 text-[14.5px] leading-relaxed text-texto-2">
+                <p>
+                  Arquivo: <span className="font-mono text-texto">{rel.instalador.nome}</span>
+                </p>
+                {rel.sha256 && (
+                  <div>
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="font-mono text-[11.5px] uppercase tracking-[0.14em] text-mudo">SHA-256 do instalador</p>
+                      <Copiar texto={rel.sha256} rotulo="Copiar" />
+                    </div>
+                    <p className="mt-2 break-all font-mono text-[13px] text-texto">{rel.sha256}</p>
+                  </div>
+                )}
+                <p>Para conferir o arquivo baixado, rode no PowerShell, na pasta Downloads, e compare com o valor acima:</p>
+                <div className="flex items-center gap-2 rounded-r2 border border-borda bg-fundo p-2 pl-3">
+                  <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap font-mono text-[13px] text-texto">{`Get-FileHash .\${rel.instalador.nome} -Algorithm SHA256`}</code>
+                  <Copiar texto={`Get-FileHash .\${rel.instalador.nome} -Algorithm SHA256`} rotulo="Copiar" />
+                </div>
+              </div>
+            </details>
+          )}
         </div>
       </section>
 
@@ -144,9 +151,9 @@ export default async function Download() {
           <h2 id="req-titulo" className="text-[30px] font-bold tracking-tight sm:text-[38px]">
             Requisitos
           </h2>
-          <Requisitos tamanhoInstalador={rel ? formatarTamanho(rel.instalador.bytes) : undefined} />
+          <Requisitos />
           <p className="mt-8 text-[15px] text-texto-2">
-            Dúvidas sobre internet, custos da IA e licença estão nas{" "}
+            Outras dúvidas estão nas{" "}
             <Link href="/#perguntas" className="text-acento underline underline-offset-4">
               perguntas frequentes
             </Link>

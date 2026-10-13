@@ -1,221 +1,176 @@
-import Link from "next/link";
+import { Briefcase, Clock3, Megaphone, MousePointerClick, Stethoscope, Type } from "lucide-react";
 import { Secao } from "@/components/Secao";
-import { Moldura } from "@/components/Moldura";
+import { Quadro, QuadroResponsivo } from "@/components/Quadro";
 import { Faq } from "@/components/Faq";
 import { BotaoDownload } from "@/components/BotaoDownload";
+import { BotaoCompra } from "@/components/BotaoCompra";
 import { Requisitos } from "@/components/Requisitos";
 import { FAQ_GERAL } from "@/lib/faq";
-import { CAP } from "@/lib/capturas";
-import { BotaoCompra } from "@/components/BotaoCompra";
-import { buscarRelease, formatarTamanho } from "@/lib/release";
+import { V } from "@/lib/visuais";
+
+const DORES = [
+  { Icone: Clock3, titulo: "Horas cortando pausa", texto: "Cada “é...”, cada respiro, cada recomeço. Um por um." },
+  { Icone: Type, titulo: "Legenda digitada", texto: "Palavra por palavra, depois corrigir o que o app ouviu errado." },
+  { Icone: MousePointerClick, titulo: "Programa complicado", texto: "Mil botões, tutorial de uma hora, e o vídeo ainda parado." },
+];
 
 const PASSOS = [
   {
-    n: "01",
-    titulo: "Importe o vídeo",
-    texto:
-      "Arraste a gravação para o VOX, inclusive vídeo do iPhone. Ele prepara uma cópia leve para o preview andar liso e guarda o original intacto para a exportação.",
-    img: CAP.importar,
-    alt: "Tela inicial do VOX com a área para soltar um vídeo novo e os projetos recentes.",
+    n: "1",
+    titulo: "Solte o vídeo",
+    texto: "Do jeito que você gravou, no celular, no iPhone ou na câmera. Arrasta e pronto.",
+    img: V.passoImportar,
+    alt: "Área para soltar o vídeo com o arquivo gravação.mov sendo arrastado.",
   },
   {
-    n: "02",
-    titulo: "Peça em português",
-    texto:
-      "Abra o Editar com IA e escreva o que quer: cortar os silêncios, pôr legenda, o seu @, um título no começo, um card com a notícia. Pedido longo vira um plano em passos que aparece na tela enquanto ele trabalha.",
-    img: CAP.iaPlano,
-    alt: "Gaveta Editar com IA com o pedido da pessoa e o plano em passos numerados.",
+    n: "2",
+    titulo: "Peça o que quer",
+    texto: "Em português, como pediria a um editor. O VOX mostra o plano e começa na hora.",
+    img: V.passoPedir,
+    alt: "Painel Editar com IA com o pedido e o plano em passos.",
   },
   {
-    n: "03",
-    titulo: "Confira as versões",
-    texto:
-      "Cada entrega vira uma versão: v1, v2, v3. Assista no próprio VOX, peça um ajuste ou volte para qualquer versão anterior. Se preferir, abra a versão no Ajustar à mão e mexa você mesmo.",
-    img: CAP.versoes,
-    alt: "Barra de versões da IA com v1 e v2, o vídeo editado no centro e a linha do tempo da versão.",
-  },
-  {
-    n: "04",
-    titulo: "Exporte",
-    texto: "Saia com um MP4 em 9:16, pronto para Reels e TikTok. Também exporta em 16:9 e 1:1.",
-    img: CAP.exportar,
-    alt: "Janela de exportação com resolução, quadros por segundo, qualidade e tempo estimado.",
+    n: "3",
+    titulo: "Confira e poste",
+    texto: "Assista, peça um ajuste se quiser e exporte. O MP4 sai pronto para postar.",
+    img: V.passoConferir,
+    alt: "Versões v1, v2 e v3, o vídeo pronto no celular e a janela de exportação com MP4 pronto.",
   },
 ];
 
-const FUNCOES = [
-  {
-    titulo: "Editar com IA",
-    selo: "powered by Claude",
-    texto:
-      "Você conversa e a IA edita: corta silêncios, coloca legenda, o seu @, cards, títulos e animações. Corrige palavra que a transcrição errou e pesquisa notícia real, sempre com a fonte visível.",
-    img: CAP.iaVersao,
-    alt: "Conversa no Editar com IA terminando com a entrega de uma versão do vídeo.",
-    destaque: true,
-  },
-  {
-    titulo: "Plano em passos, ao vivo",
-    texto:
-      "Em pedidos longos a IA escreve primeiro o plano numerado e depois anuncia cada passo enquanto faz. Você acompanha tudo sem sair da tela.",
-    img: CAP.iaPlano,
-    alt: "Plano numerado do agente e os passos anunciados um a um.",
-  },
-  {
-    titulo: "Versões com voltar",
-    texto: "Cada pedido gera uma versão nova. Compare v1 e v2 e volte para qualquer uma sem perder nada.",
-    img: CAP.versoes,
-    alt: "Botões v1 e v2 na barra de versões da IA.",
-  },
-  {
-    titulo: "Copie o estilo de um print",
-    texto:
-      "Mande o print de um Reels que você gostou e peça a legenda igual. A IA copia fonte, cores e posição e você salva o resultado como Meu estilo.",
-    img: CAP.copiarEstilo,
-    alt: "Print de outro vídeo anexado na conversa para copiar o estilo da legenda.",
-  },
-  {
-    titulo: "Modelos e Meus estilos",
-    texto: "Galeria de modelos prontos para começar rápido e os estilos que você salvou, para aplicar em outro vídeo com um clique.",
-    img: CAP.modelos,
-    alt: "Galeria com os modelos prontos e a seção Meus estilos.",
-  },
-  {
-    titulo: "Ajustar à mão",
-    texto:
-      "Timeline com trilhas de vídeo, áudio, elementos e legenda. Desvincule o áudio, corte, mude o volume e faça fade. Mova e edite cada elemento e cada palavra da legenda.",
-    img: CAP.ajustarMao,
-    alt: "Modo Ajustar à mão com a timeline de vídeo, áudio, elementos e legenda.",
-  },
-  {
-    titulo: "Importação do iPhone",
-    texto: "Abre o vídeo do iPhone direto. O preview usa uma cópia leve e a exportação volta ao arquivo original.",
-    img: CAP.editor,
-    alt: "Editor com o vídeo importado, o preview e a timeline com miniaturas e onda do áudio.",
-  },
-  {
-    titulo: "Exportação para Reels e TikTok",
-    texto: "MP4 em 9:16, 16:9 ou 1:1, com a legenda e os elementos já no vídeo.",
-    img: CAP.exportar,
-    alt: "Janela de exportação do VOX pronta para gerar o MP4.",
-  },
-  {
-    titulo: "Atualização pelo próprio app",
-    texto:
-      "O VOX avisa quando sai versão nova, baixa, confere o SHA-256 do instalador e atualiza. Seus projetos e configurações ficam.",
-    img: CAP.atualizacao,
-    alt: "Configuração do VOX na parte de atualização.",
-  },
+const BENEFICIOS = [
+  { titulo: "Sem pausa nem “é...”", texto: "O VOX corta silêncios e o começo enrolado. Você só confere.", img: V.cortes, alt: "Timeline com as pausas marcadas para corte." },
+  { titulo: "Legenda sem digitar", texto: "Sai da sua fala, palavra por palavra. Se a IA ouvir errado, corrige.", img: V.legenda, alt: "Vídeo com legenda e uma palavra corrigida." },
+  { titulo: "Seu @, títulos e cards", texto: "No estilo que você escolher. A IA confere os quadros para não cobrir o seu rosto.", img: V.elementos, alt: "Vídeo com @ no topo, título e legenda com destaque." },
+  { titulo: "Notícia real, com a fonte", texto: "Peça uma notícia: a IA pesquisa, confere e põe o card com a fonte na tela.", img: V.noticia, alt: "Vídeo com card de notícia e a fonte visível." },
+  { titulo: "Nada se perde", texto: "Cada pedido vira uma versão. Volte para qualquer uma quando quiser.", img: V.versoes, alt: "Versões v1, v2 e v3 lado a lado." },
+  { titulo: "Copie um estilo que você viu", texto: "Mande o print de um Reels e peça igual. Depois salve como Meu estilo.", img: V.estilo, alt: "Print de outro Reels ao lado do vídeo com o mesmo estilo de legenda." },
+  { titulo: "Modelos prontos", texto: "Escolha um visual pronto ou um estilo seu e aplique em outro vídeo.", img: V.modelos, alt: "Galeria de modelos: Jurídico Premium, Explicativo, Notícia Urgente e outros." },
+  { titulo: "Quer mexer você mesmo?", texto: "Ajuste à mão: corte, volume e fade no áudio, títulos e cada palavra da legenda.", img: V.mao, alt: "Timeline do modo Ajustar à mão com vídeo, áudio, elementos e legenda." },
+  { titulo: "Pronto para postar", texto: "MP4 para Reels, TikTok e YouTube: vertical, horizontal ou quadrado.", img: V.exportar, alt: "Janela de exportação com os formatos vertical, YouTube e quadrado." },
+  { titulo: "Sempre na versão nova", texto: "O VOX avisa quando há novidade e atualiza com um clique. Seus projetos ficam.", img: V.atualizacao, alt: "Aviso de versão nova disponível com o botão Atualizar." },
 ];
 
-export default async function Inicio() {
-  const r = await buscarRelease();
-  const tamanho = r.ok ? formatarTamanho(r.release.instalador.bytes) : undefined;
+const PUBLICO = [
+  { Icone: Briefcase, titulo: "Advogados", texto: "Explique um direito em um minuto e poste no mesmo dia, com legenda sóbria e o seu @." },
+  { Icone: Stethoscope, titulo: "Profissionais liberais", texto: "Médicos, dentistas, psicólogos, contadores, corretores. Quem atende o dia todo e grava no intervalo." },
+  { Icone: Megaphone, titulo: "Criadores", texto: "Quem grava falando toda semana e precisa de constância sem virar editor." },
+];
+
+export default function Inicio() {
   return (
     <>
       {/* ---------------------------------------------------------- topo */}
       <section className="relative overflow-hidden" aria-labelledby="titulo-principal">
         <div aria-hidden="true" className="grade-fundo pointer-events-none absolute inset-0" />
-        <div className="relative mx-auto max-w-6xl px-4 pb-16 pt-14 sm:px-6 sm:pb-24 sm:pt-24">
-          <div className="mx-auto max-w-3xl text-center">
+        <div className="relative mx-auto max-w-6xl px-4 pb-14 pt-12 sm:px-6 sm:pb-24 sm:pt-24">
+          <div className="mx-auto max-w-4xl text-center">
             <p className="entrar inline-flex items-center gap-2 rounded-full border border-borda bg-painel/70 px-3.5 py-1.5 text-[13px] text-texto-2">
               <span className="h-1.5 w-1.5 rounded-full bg-acento" aria-hidden="true" />
-              Editor de vídeo para Windows com IA
+              Editor de vídeo com IA para Windows
             </p>
             <h1
               id="titulo-principal"
-              className="entrar-2 texto-gradiente mt-6 text-balance text-[40px] font-extrabold leading-[1.02] tracking-[-0.035em] sm:text-[64px] lg:text-[76px]"
+              className="entrar-2 texto-gradiente mt-6 text-balance text-[46px] font-extrabold leading-[0.98] tracking-[-0.04em] sm:text-[80px] lg:text-[96px]"
             >
-              Você pede. O VOX edita o vídeo.
+              Você pede. <span className="text-acento [-webkit-text-fill-color:currentColor]">O VOX edita.</span>
             </h1>
-            <p className="entrar-3 mx-auto mt-6 max-w-2xl text-pretty text-[17px] leading-relaxed text-texto-2 sm:text-[19px]">
-              Importe a gravação, escreva o que quer em português e receba o vídeo cortado, legendado, com títulos e
-              cards, pronto para Reels e TikTok.
+            <p className="entrar-3 mx-auto mt-6 max-w-2xl text-pretty text-[18px] leading-relaxed text-texto-2 sm:text-[20px]">
+              Grave falando, escreva o que quer e receba o vídeo cortado, legendado e pronto para postar. Sem passar a
+              noite editando.
             </p>
-            <div className="entrar-3 mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <div className="entrar-3 mt-9 flex flex-col items-center justify-center gap-3">
               <BotaoDownload origem="topo" />
-              <Link
-                href="#como-funciona"
-                className="inline-flex h-14 items-center rounded-r3 px-6 text-[15px] font-semibold text-texto-2 transition-colors hover:text-texto"
-              >
-                Ver como funciona
-              </Link>
+              <p className="text-[13px] text-mudo">Windows 10 e 11 · não precisa saber editar</p>
             </div>
           </div>
-          <div className="entrar-4 mx-auto mt-14 max-w-5xl sm:mt-20">
-            <Moldura
-              src={CAP.versoes}
-              alt="O VOX com uma versão editada pela IA tocando no centro, a conversa do Editar com IA à direita e a linha do tempo embaixo."
-              prioridade
-              tamanhos="(min-width: 1100px) 1024px, 100vw"
-            />
-          </div>
+          <QuadroResponsivo
+            celular={V.hero916}
+            desktop={V.hero169}
+            alt="O VOX com o pedido “corta os silêncios, legenda jurídico premium e meu @ no topo”, o plano concluído e o vídeo pronto no celular, com legenda, título e @."
+            className="entrar-4 mx-auto mt-12 max-w-[440px] sm:mt-16 md:max-w-[1120px]"
+          />
         </div>
       </section>
 
-      {/* ------------------------------------------------- como funciona */}
+      {/* ------------------------------------------------------------ dor */}
       <Secao
-        id="como-funciona"
-        rotulo="Como funciona"
-        titulo="Do vídeo cru ao MP4 em quatro passos"
-        texto="Sem decorar ferramenta. Você descreve o resultado e o VOX faz o trabalho de edição no seu computador."
+        id="o-problema"
+        rotulo="O problema"
+        titulo="Gravar leva dois minutos. Editar leva a noite."
+        texto="Você sabe que precisa postar. O que trava é a edição."
+        className="border-t border-borda/60"
       >
-        <ol className="mt-16 space-y-20 sm:space-y-28">
-          {PASSOS.map((p, i) => (
-            <li key={p.n} className="revelar grid items-center gap-8 lg:grid-cols-12 lg:gap-14">
-              <div className={`lg:col-span-5 ${i % 2 ? "lg:order-2" : ""}`}>
-                <span className="font-mono text-[13px] text-acento">{p.n}</span>
-                <h3 className="mt-2 text-[26px] font-bold tracking-tight sm:text-[30px]">{p.titulo}</h3>
-                <p className="mt-4 text-pretty text-[16px] leading-relaxed text-texto-2 sm:text-[17px]">{p.texto}</p>
+        <ul className="mt-12 grid gap-4 md:grid-cols-3">
+          {DORES.map(({ Icone, titulo, texto }) => (
+            <li key={titulo} className="revelar rounded-r3 border border-borda bg-painel/60 p-6 sm:p-7">
+              <Icone className="h-6 w-6 text-perigo" aria-hidden="true" />
+              <h3 className="mt-4 text-[19px] font-bold tracking-tight">{titulo}</h3>
+              <p className="mt-2 text-[15.5px] leading-relaxed text-texto-2">{texto}</p>
+            </li>
+          ))}
+        </ul>
+      </Secao>
+
+      {/* -------------------------------------------------------- promessa */}
+      <section aria-labelledby="promessa-titulo" className="relative overflow-hidden border-t border-borda/60 py-20 sm:py-28">
+        <div aria-hidden="true" className="brilho-acento pointer-events-none absolute -right-40 top-10 h-[600px] w-[800px]" />
+        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16">
+          <div className="revelar">
+            <p className="font-mono text-[12px] font-medium uppercase tracking-[0.18em] text-acento">A solução</p>
+            <h2 id="promessa-titulo" className="mt-3 text-balance text-[36px] font-extrabold leading-[1.04] tracking-tight sm:text-[52px]">
+              Escreva o que quer. O VOX faz a edição.
+            </h2>
+            <p className="mt-6 text-[17px] leading-relaxed text-texto-2 sm:text-[18px]">
+              Como se estivesse falando com um editor. Ele mostra o plano, faz cada passo na sua frente e entrega o vídeo
+              pronto para você conferir.
+            </p>
+            <blockquote className="mt-8 rounded-r3 border border-acento/30 bg-acento-tinta/60 p-5 text-[17px] leading-relaxed text-texto">
+              “corta os silêncios, legenda jurídico premium e meu @ no topo”
+            </blockquote>
+            <p className="mt-4 text-[14px] text-mudo">Editar com IA, powered by Claude.</p>
+          </div>
+          <Quadro
+            src={V.plano}
+            alt="Painel Editar com IA mostrando o pedido e o plano: cortar pausas, legenda jurídico premium, @ no topo e conferir."
+            tamanhos="(min-width: 1024px) 560px, 100vw"
+            className="revelar"
+          />
+        </div>
+      </section>
+
+      {/* -------------------------------------------------- como funciona */}
+      <Secao id="como-funciona" rotulo="Como funciona" titulo="Três passos. Nenhum é editar." className="border-t border-borda/60">
+        <ol className="mt-14 grid gap-10 md:grid-cols-3 md:gap-6">
+          {PASSOS.map((p) => (
+            <li key={p.n} className="revelar">
+              <Quadro src={p.img} alt={p.alt} tamanhos="(min-width: 768px) 380px, 100vw" />
+              <div className="mt-6 flex items-baseline gap-3">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-acento font-mono text-[15px] font-medium text-fundo">
+                  {p.n}
+                </span>
+                <h3 className="text-[23px] font-bold tracking-tight">{p.titulo}</h3>
               </div>
-              <div className={`lg:col-span-7 ${i % 2 ? "lg:order-1" : ""}`}>
-                <Moldura
-                  src={p.img}
-                  alt={p.alt}
-                  brilho={false}
-                  className={p.img.height > p.img.width ? "mx-auto max-w-[400px]" : ""}
-                  tamanhos="(min-width: 1024px) 640px, 100vw"
-                />
-              </div>
+              <p className="mt-3 text-[16px] leading-relaxed text-texto-2">{p.texto}</p>
             </li>
           ))}
         </ol>
       </Secao>
 
-      {/* --------------------------------------------------------- funções */}
+      {/* ---------------------------------------------------- benefícios */}
       <Secao
         id="funcoes"
-        rotulo="Funções"
-        titulo="Tudo o que o VOX faz hoje"
-        texto="Só está aqui o que já funciona no app. Cada imagem é um print da tela real."
+        rotulo="O que ele faz por você"
+        titulo="Tudo o que tomava a sua noite"
         className="border-t border-borda/60"
       >
-        <ul className="mt-14 grid gap-4 sm:gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {FUNCOES.map((f) => (
-            <li
-              key={f.titulo}
-              className={`revelar flex flex-col overflow-hidden rounded-r3 border border-borda bg-painel transition-colors hover:border-borda-forte ${
-                f.destaque ? "md:col-span-2 lg:row-span-2" : ""
-              }`}
-            >
+        <ul className="mt-14 grid gap-5 md:grid-cols-2">
+          {BENEFICIOS.map((b) => (
+            <li key={b.titulo} className="revelar overflow-hidden rounded-r4 border border-borda bg-painel">
+              <Quadro src={b.img} alt={b.alt} tamanhos="(min-width: 768px) 560px, 100vw" className="rounded-none border-0 border-b" />
               <div className="p-6 sm:p-7">
-                <h3 className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[19px] font-bold tracking-tight">
-                  {f.titulo}
-                  {f.selo && <span className="text-[13px] font-medium text-mudo">{f.selo}</span>}
-                </h3>
-                <p className="mt-3 text-pretty text-[15px] leading-relaxed text-texto-2">{f.texto}</p>
-              </div>
-              <div className="mt-auto px-6 pb-6 sm:px-7 sm:pb-7">
-                <Moldura
-                  src={f.img}
-                  alt={f.alt}
-                  brilho={false}
-                  proporcao={f.destaque ? "16 / 11" : "16 / 10"}
-                  tamanhos={
-                    f.destaque
-                      ? "(min-width: 1024px) 720px, 100vw"
-                      : "(min-width: 1024px) 360px, (min-width: 768px) 50vw, 100vw"
-                  }
-                />
+                <h3 className="text-[21px] font-bold tracking-tight">{b.titulo}</h3>
+                <p className="mt-2 text-[16px] leading-relaxed text-texto-2">{b.texto}</p>
               </div>
             </li>
           ))}
@@ -226,31 +181,34 @@ export default async function Inicio() {
       <Secao
         id="antes-e-depois"
         rotulo="Antes e depois"
-        titulo="O mesmo vídeo, antes e depois do VOX"
-        texto="À esquerda, a gravação como saiu do celular. À direita, a versão que a IA entregou para o pedido “edita no automático, estilo jurídico premium, com notícia real sobre a saidinha”. Rosto embaçado para preservar a pessoa."
+        titulo="Do vídeo cru ao vídeo pronto, com um pedido"
+        texto="A mesma gravação: à esquerda como saiu do celular, à direita depois do VOX, com legenda, título e @."
         className="border-t border-borda/60"
       >
-        <div className="revelar mx-auto mt-14 grid max-w-3xl grid-cols-2 gap-3 sm:gap-6">
-          <figure>
-            <Moldura src={CAP.antes} alt="Quadro do vídeo original, sem edição, com o rosto embaçado." brilho={false} tamanhos="(min-width: 768px) 380px, 50vw" />
-            <figcaption className="mt-3 font-mono text-[12px] text-mudo sm:text-[13px]">ANTES · original</figcaption>
-          </figure>
-          <figure>
-            <Moldura src={CAP.depois} alt="A versão editada pela IA tocando no VOX, com card de notícia e legenda, com o rosto embaçado." brilho={false} tamanhos="(min-width: 768px) 380px, 50vw" />
-            <figcaption className="mt-3 font-mono text-[12px] text-acento sm:text-[13px]">DEPOIS · versão da IA</figcaption>
-          </figure>
-        </div>
+        <Quadro
+          src={V.antesDepois}
+          alt="Lado a lado: o vídeo cru e o mesmo vídeo editado com legenda, título e @."
+          tamanhos="(min-width: 1100px) 1040px, 100vw"
+          className="revelar mx-auto mt-12 max-w-[1040px]"
+        />
+      </Secao>
+
+      {/* ------------------------------------------------------- para quem */}
+      <Secao id="para-quem" rotulo="Para quem é" titulo="Para quem grava falando e não tem tempo de editar" className="border-t border-borda/60">
+        <ul className="mt-12 grid gap-4 md:grid-cols-3">
+          {PUBLICO.map(({ Icone, titulo, texto }) => (
+            <li key={titulo} className="revelar rounded-r3 border border-borda bg-painel/60 p-7">
+              <Icone className="h-7 w-7 text-acento" aria-hidden="true" />
+              <h3 className="mt-5 text-[21px] font-bold tracking-tight">{titulo}</h3>
+              <p className="mt-2 text-[15.5px] leading-relaxed text-texto-2">{texto}</p>
+            </li>
+          ))}
+        </ul>
       </Secao>
 
       {/* ------------------------------------------------------- requisitos */}
-      <Secao
-        id="requisitos"
-        rotulo="Requisitos"
-        titulo="O que o seu computador precisa"
-        texto="Não precisa de placa de vídeo. O VOX é desenvolvido e testado num Intel Core i5 de 4 núcleos, de 2012, com 16 GB de memória."
-        className="border-t border-borda/60"
-      >
-        <Requisitos tamanhoInstalador={tamanho} />
+      <Secao id="requisitos" rotulo="O que você precisa" titulo="Pouca coisa" className="border-t border-borda/60">
+        <Requisitos />
       </Secao>
 
       {/* -------------------------------------------------------------- FAQ */}
@@ -265,11 +223,11 @@ export default async function Inicio() {
           className="brilho-acento pointer-events-none absolute left-1/2 top-1/2 h-[520px] w-[900px] -translate-x-1/2 -translate-y-1/2"
         />
         <div className="revelar relative mx-auto max-w-3xl px-4 py-24 text-center sm:px-6 sm:py-32">
-          <h2 id="final-titulo" className="text-balance text-[34px] font-extrabold leading-[1.05] tracking-tight sm:text-[52px]">
+          <h2 id="final-titulo" className="text-balance text-[38px] font-extrabold leading-[1.02] tracking-tight sm:text-[60px]">
             Seu próximo vídeo começa com um pedido.
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-[17px] leading-relaxed text-texto-2">
-            Baixe o VOX para Windows, abra uma gravação e escreva o que quer.
+          <p className="mx-auto mt-5 max-w-xl text-[18px] leading-relaxed text-texto-2">
+            Baixe o VOX, solte uma gravação e escreva o que quer.
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <BotaoDownload origem="final" />

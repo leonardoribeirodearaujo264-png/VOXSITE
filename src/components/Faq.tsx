@@ -1,13 +1,14 @@
 import type { ReactNode } from "react";
+import { AbrirPorEndereco } from "./AbrirPorEndereco";
 
-export type Pergunta = { p: string; r: ReactNode };
+export type Pergunta = { p: string; r: ReactNode; id?: string };
 
 /** Perguntas com <details>: funciona sem JavaScript e com teclado. */
 export function Faq({ itens }: { itens: Pergunta[] }) {
   return (
     <div className="revelar mt-12 divide-y divide-borda rounded-r3 border border-borda bg-painel/60">
       {itens.map((item) => (
-        <details key={item.p} className="px-5 sm:px-7">
+        <details key={item.p} id={item.id} className="scroll-mt-24 px-5 sm:px-7">
           <summary className="flex cursor-pointer items-center justify-between gap-6 py-5 text-[16px] font-semibold sm:text-[17px]">
             <span>{item.p}</span>
             <svg
@@ -27,6 +28,7 @@ export function Faq({ itens }: { itens: Pergunta[] }) {
           </div>
         </details>
       ))}
+      <AbrirPorEndereco />
     </div>
   );
 }

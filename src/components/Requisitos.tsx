@@ -1,31 +1,40 @@
-/** Requisitos conferidos no projeto do app: instalador/vox.iss (64 bits,
- *  1,1 GB instalado, WebView2), backend/remotion.py (≈220 MB de download,
- *  ≈450 MB em disco) e a release publicada (tamanho do instalador). */
-export function Requisitos({ tamanhoInstalador }: { tamanhoInstalador?: string }) {
+import { Cpu, KeyRound, MonitorCheck, Wifi } from "lucide-react";
+
+/** Requisitos em linguagem simples. Conferidos no projeto do app
+ *  (instalador/vox.iss: Windows 64 bits; render pelo processador; a IA usa a
+ *  chave de API da própria pessoa). */
+export function Requisitos() {
   const itens = [
-    { rotulo: "Sistema", valor: "Windows 10 ou 11, 64 bits" },
+    { Icone: MonitorCheck, titulo: "Windows 10 ou 11", texto: "Computador com Windows de 64 bits e uns 2 GB livres no disco." },
+    { Icone: Cpu, titulo: "Não precisa de placa de vídeo", texto: "Funciona em computador comum, sem placa de vídeo dedicada." },
+    { Icone: Wifi, titulo: "Internet para usar a IA", texto: "Para baixar o VOX e para os pedidos ao Editar com IA." },
     {
-      rotulo: "Instalador",
-      valor: tamanhoInstalador ? `${tamanhoInstalador} para baixar` : "Baixado uma vez, pelo GitHub",
+      Icone: KeyRound,
+      titulo: "Sua própria chave da IA",
+      texto: "O uso da IA é cobrado na sua conta, sem intermediário. A gente mostra como criar.",
+      link: "/#chave",
     },
-    { rotulo: "Espaço em disco", valor: "Cerca de 1,1 GB do programa e 450 MB do Remotion, mais os seus projetos" },
-    {
-      rotulo: "Primeira abertura",
-      valor: "Com o seu aceite, baixa o Remotion (Node.js, pacotes e Chrome Headless Shell), cerca de 220 MB",
-    },
-    { rotulo: "Internet", valor: "Para baixar, para a primeira abertura e para o Editar com IA" },
-    { rotulo: "Editar com IA", valor: "Uma chave de API da Anthropic, sua, cobrada na sua conta" },
-    { rotulo: "Placa de vídeo", valor: "Não precisa. A exportação é pelo processador" },
-    { rotulo: "WebView2", valor: "Já vem no Windows. Se faltar, o instalador baixa" },
   ];
   return (
-    <dl className="revelar mt-12 grid overflow-hidden rounded-r3 border border-borda sm:grid-cols-2">
-      {itens.map((i) => (
-        <div key={i.rotulo} className="border-b border-borda bg-painel/60 p-5 sm:p-6 sm:odd:border-r">
-          <dt className="font-mono text-[12px] uppercase tracking-[0.14em] text-mudo">{i.rotulo}</dt>
-          <dd className="mt-2 text-[16px] leading-snug text-texto">{i.valor}</dd>
-        </div>
+    <ul className="revelar mt-12 grid gap-4 sm:grid-cols-2">
+      {itens.map(({ Icone, titulo, texto, link }) => (
+        <li key={titulo} className="flex gap-4 rounded-r3 border border-borda bg-painel/70 p-6">
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-r2 bg-acento-tinta text-acento">
+            <Icone className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <div>
+            <h3 className="text-[17px] font-semibold">{titulo}</h3>
+            <p className="mt-1.5 text-[15px] leading-relaxed text-texto-2">
+              {texto}{" "}
+              {link && (
+                <a href={link} className="font-semibold text-acento underline underline-offset-4">
+                  Ver como
+                </a>
+              )}
+            </p>
+          </div>
+        </li>
       ))}
-    </dl>
+    </ul>
   );
 }

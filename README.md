@@ -10,8 +10,21 @@ npm run dev        # http://localhost:3000
 npm run build && npm run start
 ```
 
-## Prints do app
+## Visuais (Remotion)
 
-`capturas/` tem os prints reais do app, já com rosto e @ da pessoa embaçados (os originais ficam fora do repositório). `python -I scripts/preparar-capturas.py` gera os WebP em `src/assets/capturas/`.
+Todo visual do site sai das composições em `remotion/`: as telas do app são recriadas como componentes (`remotion/ui`) com as cores e a fonte do frontend do VOX, e as pessoas são personagens ilustrados. Nenhum print do app.
 
-`node scripts/prints.mjs <saida> http://localhost:3200` tira prints de página inteira em 390 px e 1440 px (usa o Playwright de `PLAYWRIGHT_DE`).
+- `node scripts/render-quadros.mjs [id ...]`: renderiza os quadros estáticos em `src/assets/visuais/*.webp`.
+- `npx remotion studio remotion/index.ts`: abre o editor do Remotion para ver as cenas.
+
+## Testes
+
+- `node scripts/teste-imagens.mjs http://localhost:3200`: falha se qualquer imagem, vídeo ou capa der erro (390 e 1440 px).
+- `node scripts/teste-download.mjs http://localhost:3200`: clica em "Baixar para Windows" e exige o download direto do .exe.
+- `node scripts/prints.mjs <saida> http://localhost:3200`: prints de página inteira em 390 e 1440 px.
+
+Os scripts usam o Playwright de `PLAYWRIGHT_DE` (padrão: `D:/VOX-VIDEOS/frontend/`).
+
+## Narração
+
+A voz dos vídeos é gerada localmente com o **Kokoro TTS** (modelo Kokoro-82M, licença Apache 2.0, de hexgrad), rodando por `kokoro-onnx` (MIT), instalado fora deste repositório. Só os MP3 gerados entram aqui (`narracao/`). Roteiros em `narracao/roteiros.md`.
