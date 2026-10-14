@@ -4,7 +4,8 @@ import { BotaoDownloadVisual } from "@/components/BotaoDownload";
 import { Requisitos } from "@/components/Requisitos";
 import { Copiar } from "@/components/Copiar";
 import { buscarRelease, formatarData, formatarTamanho } from "@/lib/release";
-import { LINK_COMPRA, RELEASES } from "@/lib/site";
+import { FormReenviar } from "@/components/pagamento/FormReenviar";
+import { RELEASES } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Baixar para Windows",
@@ -83,14 +84,10 @@ export default async function Download() {
             <a href={RELEASES.pagina} className="font-semibold text-acento underline-offset-4 hover:underline">
               Todas as versões
             </a>
-            {LINK_COMPRA && (
-              <>
-                <span className="mx-3 text-mudo" aria-hidden="true">·</span>
-                <a href={LINK_COMPRA} className="font-semibold text-texto underline-offset-4 hover:underline">
-                  Comprar licença
-                </a>
-              </>
-            )}
+            <span className="mx-3 text-mudo" aria-hidden="true">·</span>
+            <Link href="/comprar" className="font-semibold text-texto underline-offset-4 hover:underline">
+              Comprar Vox — R$ 470,00
+            </Link>
           </p>
         </div>
       </section>
@@ -143,6 +140,18 @@ export default async function Download() {
               </div>
             </details>
           )}
+        </div>
+      </section>
+
+      <section id="reenviar-chave" aria-labelledby="reenviar-titulo" className="scroll-mt-24 border-t border-borda/60 py-20 sm:py-24">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6">
+          <h2 id="reenviar-titulo" className="text-[30px] font-bold tracking-tight sm:text-[38px]">
+            Já comprou? Receber minha chave de novo
+          </h2>
+          <p className="mt-4 text-[16px] leading-relaxed text-texto-2">
+            Digite o e-mail usado na compra. Se ele comprou o VOX, mandamos a mesma chave de novo para ele.
+          </p>
+          <FormReenviar />
         </div>
       </section>
 

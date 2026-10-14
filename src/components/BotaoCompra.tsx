@@ -1,14 +1,13 @@
-import { LINK_COMPRA } from "@/lib/site";
+import Link from "next/link";
 
-/** "Comprar licença": só aparece com NEXT_PUBLIC_LINK_COMPRA preenchida. */
+/** Leva para /comprar (Checkout Pro do Mercado Pago, pagamento único). */
 export function BotaoCompra() {
-  if (!LINK_COMPRA) return null;
   return (
-    <a
-      href={LINK_COMPRA}
+    <Link
+      href="/comprar"
       className="inline-flex h-[60px] items-center rounded-r3 border border-borda-forte px-6 text-[16px] font-semibold text-texto transition-colors hover:border-acento hover:text-acento"
     >
-      Comprar licença
-    </a>
+      Comprar Vox — R$ 470,00
+    </Link>
   );
 }

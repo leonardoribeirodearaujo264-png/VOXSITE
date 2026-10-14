@@ -42,3 +42,6 @@ next-env.d.ts
 
 # renders cheios do Remotion (o site usa só public/videos)
 /out/
+
+# exemplo de variáveis (sem valores) entra no git
+!.env.example

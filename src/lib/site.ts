@@ -19,9 +19,6 @@ export const RELEASES = {
   },
 } as const;
 
-/** Botão "Comprar licença": só existe com a variável preenchida. */
-export const LINK_COMPRA = (process.env.NEXT_PUBLIC_LINK_COMPRA || "").trim();
-
 export const NAV = [
   { href: "/#como-funciona", rotulo: "Como funciona" },
   { href: "/#funcoes", rotulo: "Funções" },
