@@ -436,3 +436,16 @@ describe("banco no Supabase", () => {
     for (const t of r.rows) expect(t.relrowsecurity, t.relname).toBe(true);
   });
 });
+
+describe("endereço do site no Mercado Pago", () => {
+  it("no preview da Vercel usa o endereço fixo da branch; fora dele, o NEXT_PUBLIC_SITE_URL", async () => {
+    const { cfg } = await import("@/lib/pagamento/config");
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://site-oficial.example");
+    vi.stubEnv("VERCEL_ENV", "preview");
+    vi.stubEnv("VERCEL_BRANCH_URL", "voxsite-git-pagamento-x.vercel.app");
+    expect(cfg.siteUrl).toBe("https://voxsite-git-pagamento-x.vercel.app");
+    vi.stubEnv("VERCEL_ENV", "production");
+    expect(cfg.siteUrl).toBe("https://site-oficial.example");
+    vi.unstubAllEnvs();
+  });
+});

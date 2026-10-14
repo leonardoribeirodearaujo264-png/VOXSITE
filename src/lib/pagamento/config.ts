@@ -42,7 +42,15 @@ export const cfg = {
   get databaseUrl() {
     return env("DATABASE_URL");
   },
+  /** Endereço usado no webhook e nas páginas de volta do Mercado Pago. No
+   *  preview da Vercel, o endereço FIXO da branch (VERCEL_BRANCH_URL, que a
+   *  Vercel define sozinha): o NEXT_PUBLIC_SITE_URL do site oficial vale para
+   *  preview e produção juntos e mandaria o Mercado Pago para o site oficial. */
   get siteUrl() {
+    const branch = env("VERCEL_BRANCH_URL");
+    if (env("VERCEL_ENV") === "preview" && branch) {
+      return ("https://" + branch.replace(/^https?:\/\//, "")).replace(/\/+$/, "");
+    }
     return (env("NEXT_PUBLIC_SITE_URL") || SITE.url).replace(/\/+$/, "");
   },
   /** Padrão TRUE: licença grátis só com EXIGIR_PAGAMENTO=false. */
