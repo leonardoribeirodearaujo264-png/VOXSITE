@@ -71,7 +71,7 @@ Todas em `.env.example` (sem valores). Cadastre na Vercel em Settings > Environm
 | `VOX_SEGREDO_LICENCA` | Segredo que assina as chaves, igual ao do app |
 | `RESEND_API_KEY` / `EMAIL_REMETENTE` | Envio do e-mail (domínio verificado no Resend) |
 | `ADMIN_SENHA` | Senha do `/admin` (vazia = desligado) |
-| `DATABASE_URL` | Postgres (Neon / Postgres da Vercel). As tabelas são criadas sozinhas na primeira chamada |
+| `DATABASE_URL` ou `POSTGRES_URL` | Postgres (Supabase pela integração da Vercel, que cria `POSTGRES_URL` sozinha). As tabelas são criadas na primeira chamada, com RLS ligado e nenhuma política: a API pública do Supabase (chave anon) não enxerga nada |
 | `NEXT_PUBLIC_SITE_URL` | Endereço público, sem barra no fim (vai no `notification_url` e nas `back_urls`) |
 | `EXIGIR_PAGAMENTO` | `true` (padrão) ou `false` para liberar a licença grátis |
 | `MAQUINAS_POR_LICENCA` | Computadores por licença (padrão 2) |

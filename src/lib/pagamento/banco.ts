@@ -1,5 +1,6 @@
 /**
- * Banco Postgres. Produção: Neon (@neondatabase/serverless, DATABASE_URL).
+ * Banco Postgres. Produção: Supabase (ou qualquer Postgres) pelo `pg`, com
+ * DATABASE_URL ou POSTGRES_URL (o nome que a integração Supabase da Vercel cria).
  * Testes: PGlite em memória, com o MESMO SQL (definirBanco).
  * Sempre consulta parametrizada. A migração é idempotente e roda na
  * primeira chamada de cada processo.
@@ -17,10 +18,12 @@ export interface Banco extends Executor {
 
 export class BancoIndisponivel extends Error {
   constructor() {
-    super("DATABASE_URL não configurado");
+    super("DATABASE_URL/POSTGRES_URL não configurado");
   }
 }
 
+// ATENÇÃO: a migração é separada por ";" (uma instrução por vez). Nada de
+// ";" dentro de comentário ou texto aqui.
 export const MIGRACAO = `
 CREATE TABLE IF NOT EXISTS pedidos (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -73,6 +76,15 @@ CREATE TABLE IF NOT EXISTS limites (
   contagem integer NOT NULL DEFAULT 0,
   PRIMARY KEY (chave, janela_inicio)
 );
+
+-- Supabase publica o esquema public numa API com a chave PÚBLICA (anon).
+-- RLS ligado e NENHUMA política: essa API não lê nem grava nada aqui, só o
+-- servidor do site (dono das tabelas, conexão direta) acessa os dados.
+ALTER TABLE pedidos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE licencas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE licenca_maquinas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE webhook_eventos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE limites ENABLE ROW LEVEL SECURITY;
 `;
 
 let atual: Banco | null = null;
@@ -84,9 +96,32 @@ export function definirBanco(b: Banco | null) {
   migrado = null;
 }
 
-async function criarNeon(url: string): Promise<Banco> {
-  const { Pool } = await import("@neondatabase/serverless");
-  const pool = new Pool({ connectionString: url });
+/** Supabase manda `sslmode=require` na URL; o `pg` novo trata isso como
+ *  verificação completa do certificado e recusa a cadeia do pooler. A
+ *  conexão continua cifrada (TLS); só a verificação da cadeia fica a cargo
+ *  do provedor, como na documentação do Supabase para o node-postgres. */
+function semSslmode(url: string): string {
+  try {
+    const u = new URL(url);
+    u.searchParams.delete("sslmode");
+    u.searchParams.delete("supa");
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
+
+async function criarPostgres(url: string): Promise<Banco> {
+  const { Pool } = await import("pg");
+  const local = /@(localhost|127\.0\.0\.1)[:/]/.test(url);
+  // função serverless: poucas conexões por instância (o pooler do Supabase
+  // segura o resto)
+  const pool = new Pool({
+    connectionString: semSslmode(url),
+    ssl: local ? undefined : { rejectUnauthorized: false },
+    max: 3,
+    idleTimeoutMillis: 10_000,
+  });
   return {
     async query<T extends Linha>(sql: string, params: unknown[] = []) {
       const r = await pool.query(sql, params);
@@ -115,17 +150,17 @@ async function criarNeon(url: string): Promise<Banco> {
   };
 }
 
-/** O banco pronto (migrado). Sem DATABASE_URL: BancoIndisponivel. */
+/** O banco pronto (migrado). Sem DATABASE_URL/POSTGRES_URL: BancoIndisponivel. */
 export async function banco(): Promise<Banco> {
   if (!atual) {
-    const url = (process.env.DATABASE_URL ?? "").trim();
+    const url = (process.env.DATABASE_URL || process.env.POSTGRES_URL || "").trim();
     if (!url) throw new BancoIndisponivel();
-    atual = await criarNeon(url);
+    atual = await criarPostgres(url);
   }
   const b = atual;
   if (!migrado) {
     migrado = (async () => {
-      // uma instrução por vez: o driver HTTP/WS não aceita várias com parâmetros
+      // uma instrução por vez (pooler em modo transação)
       for (const sql of MIGRACAO.split(";").map((s) => s.trim()).filter(Boolean)) {
         await b.query(sql);
       }

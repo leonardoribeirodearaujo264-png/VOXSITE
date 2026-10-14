@@ -424,3 +424,15 @@ describe("respostas das APIs", () => {
     expect(r2.headers.get("cache-control")).toContain("no-store");
   });
 });
+
+describe("banco no Supabase", () => {
+  it("todas as tabelas ficam com RLS ligado (a API pública do Supabase não lê nada)", async () => {
+    const pg = await bancoDeTeste();
+    const r = await pg.query<{ relname: string; relrowsecurity: boolean }>(
+      `SELECT relname, relrowsecurity FROM pg_class
+        WHERE relname IN ('pedidos','licencas','licenca_maquinas','webhook_eventos','limites')`,
+    );
+    expect(r.rows).toHaveLength(5);
+    for (const t of r.rows) expect(t.relrowsecurity, t.relname).toBe(true);
+  });
+});
